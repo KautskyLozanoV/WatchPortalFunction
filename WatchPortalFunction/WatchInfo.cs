@@ -18,16 +18,18 @@ namespace WatchPortalFunction
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
+            // Retrieve the model id from the query string
+            string model = req.Query["model"];
 
-            string name = req.Query["name"];
+            // If the user specified a model id, find the details of the model of watch
+            if (model != null)
+            {
+                // Use dummy data for this example
+                dynamic watchinfo = new { Manufacturer = "Abc", CaseType = "Solid", Bezel = "Titanium", Dial = "Roman", CaseFinish = "Silver", Jewels = 15 };
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-
-            return name != null
-                ? (ActionResult)new OkObjectResult($"Hello, {name}")
-                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+                return (ActionResult)new OkObjectResult($"Watch Details: {watchinfo.Manufacturer}, {watchinfo.CaseType}, {watchinfo.Bezel}, {watchinfo.Dial}, {watchinfo.CaseFinish}, {watchinfo.Jewels}");
+            }
+            return new BadRequestObjectResult("Please provide a watch model in the query string");
         }
     }
 }
